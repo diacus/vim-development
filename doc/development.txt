@@ -24,6 +24,7 @@ CONTENTS                                            *development-contents*
   Python ......................................... |development-python|
   Java ............................................. |development-java|
   Make ............................................. |development-make|
+  Quickfix ...................................... |development-quickfix|
 ==============================================================================
 
 CODE FILE SETUP                                       *development-setup*
@@ -174,5 +175,17 @@ replaced with spaces: >
     setlocal shiftwidth=4
     setlocal tabstop=4
 <
+
+QUICKFIX                                            *development-quickfix*
+
+When a test run, like the output of the Python unittest module, is
+loaded into the quickfix window, |:cwindow|, the failure the cursor is
+on can be opened in a vertical split, at the reported line: >
+
+    <F8>    Jumps to the test failure under the cursor
+<
+The entry is expected to hold the line number, the pattern that the
+unittest output uses, "File \"...\", line N".  This is a buffer-local
+mapping, so the rest of the buffers keep <F8> free.
 
  vim:tw=78:ts=8:ft=help:norl:

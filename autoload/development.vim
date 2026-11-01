@@ -153,3 +153,17 @@ function development#python_setup()
     setlocal makeprg=flake8
   endif
 endfunction
+
+" ==============================================================================
+" Quickfix support, see |development-quickfix|
+" ==============================================================================
+
+function! development#qf_jump_from_python_test()
+  " Jump to the file and line of the unittest failure the cursor is on,
+  " when the quickfix window holds the output of a test run
+  let current_line = getline('.')
+  let line_number = substitute(current_line, '^.*line \(\d\+\).*$', '\1', '')
+  vertical wincmd f
+  execute ':' . line_number
+  normal zz
+endfunction
