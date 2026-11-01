@@ -1,4 +1,4 @@
-INTRODUCTION                                                   *development.vim*
+INTRODUCTION                               *development.vim* *vim-development*
                                                         _                   ~
                                                  __   _(_)_ __ ___          ~
                                                  \ \ / / | '_ ` _ \ _____   ~
@@ -11,25 +11,97 @@ INTRODUCTION                                                   *development.vim*
              | (_| |  __/\ V /  __/ | (_) | |_) | | | | | |  __/ | | | |_   ~
               \__,_|\___| \_/ \___|_|\___/| .__/|_| |_| |_|\___|_| |_|\__|  ~
                                           |_|                               ~
-                      Development settings for Vim editor
-                                   by @diacus
+              Source code settings for Vim editor          by @diacus
 
 ==============================================================================
-CONTENTS                                                  *development-contents*
+CONTENTS                                            *development-contents*
 
-Contents ................................................ |development-contents|
-  Normal Mappings ................................. |development-normal-mapings|
-  Commands .............................................. |development-commands|
+  Code file setup ................................... |development-setup|
+  Variables ........................................ |development-vars|
+  Normal mode mappings ................... |development-normal-mappings|
+  Commands .................................... |development-commands|
+  CTags integration ............................. |development-ctags|
 ==============================================================================
 
-NORMAL MAPPINGS                                    *development-normal-mappings*
-<Leader>tn     Toogles the line numbering
-<Leader>tl     Toogles cursorline
-<Leader>tx     Toogles and synchronize both cursorline and cursor column
-<Leader>tm     Toggles margin error highlighting
+CODE FILE SETUP                                       *development-setup*
 
-COMMANDS                                                  *development-commands*
-:InsertDate    Inserts Today's date and time in the current buffer
-:CreateTags    Create exuberant CTags file
+When a buffer with |'filetype'| listed in |g:code_filetypes| opens, this
+plugin applies the following settings to that buffer:
 
- vim:tw=78:et:ft=help:norl:
+- 'cursorline'
+
+- 'tabstop', 'shiftwidth' and 'softtabstop' are set to |b:code_indent|
+  (2, by default)
+
+- The margin, the region beyond 'textwidth', is highlighted with the
+  |ErrorMsg| color; toggle it with the <Leader>tm mapping
+
+- 'formatoptions' to "croqj", the usual set for comment-aware editing
+
+- 'expandtab', so source code contains no tabs
+
+- 'numberwidth' to 6
+
+Additionally, the files with extension .ts get the "typescript"
+|filetype|. >
+
+    au BufNewFile,BufRead *.ts set filetype=typescript
+<
+
+VARIABLES                                            *development-vars*
+
+*b:code_indent*  Amount of spaces for the indentation of the current
+               buffer.  Different file types can set this buffer-local
+               variable; otherwise the value 2 is used.  For example,
+               add it in a python ftplugin: >
+    let b:code_indent = 4
+<
+
+*g:code_filetypes*  Plain list of filetypes the setup is applied to.  It
+               ships with the usual suspects - C, C++, Go, Python,
+               JavaScript, Rust, Lua, Vim, YAML, and so on.  Extend it
+               in your .vimrc before the first code buffer is loaded: >
+    let g:code_filetypes += ['fsharp']
+<
+
+NORMAL MODE MAPPINGS                      *development-normal-mappings*
+
+Note: the mappings below use |<Leader>|; the boilerplate in
+|settings-bootstrap| defines it as <Space>.
+
+<Leader>tn   Toggles the line numbering.  When |v:version| >= 703, the
+             relative numbering follows the number column, so both are
+             turned on and off together.
+
+<Leader>tl   Toggles 'cursorline'.  If 'cursorcolumn' is on, it is
+             turned off instead.
+
+<Leader>tx   Toggles the cursor cross, 'cursorline' and 'cursorcolumn'
+             at once.  If only one of them is on, first both are
+             turned on.
+
+<Leader>tm   Toggles the highlight of the margin, the text beyond
+             'textwidth', on the current buffer.
+
+COMMANDS                                              *development-commands*
+
+                                                    *:InsertDate*
+:InsertDate   Replaces the tail of the current line, from the first ':'
+              character up to the end, with the current date and time.
+
+                                                    *:CreateTags*
+:CreateTags   Generates the tags file of the current working directory
+              with ctags, in the background.  Only available if the
+              buffer was set up by this plugin, see |development-setup|
+              and |development-ctags|.
+
+CTAGS INTEGRATION                                  *development-ctags*
+
+Whenever the buffer is written and a tags file exists in the current
+working directory, this plugin regenerates it with ctags: >
+
+    ctags -R --exclude=env --exclude=.venv --exclude=node_modules . &
+<
+It needs the exuberant-ctags or universal-ctags tool installed.
+
+ vim:tw=78:ts=8:ft=help:norl:
