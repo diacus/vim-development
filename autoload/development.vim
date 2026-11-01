@@ -56,7 +56,7 @@ function! development#setup()
   let b:did_development_setup = 1
 endfunction
 
-function! development#toogle_number()
+function! development#toggle_number()
   " Show line numbers
   if v:version >= 703
     let &relativenumber = &number
@@ -123,5 +123,33 @@ function! development#margin_toggle()
     call development#margin_off()
   else
     call development#margin_on()
+  endif
+endfunction
+
+" ==============================================================================
+" Python support, see |development-python|
+" ==============================================================================
+
+function! development#python_breakpoint_add()
+  if exists('g:use_bpython') && g:use_bpython == 1
+    normal Oimport bpdb; bpdb.set_trace()  # BREAKPOINT
+    normal oprint('>>> bpdb.set_trace()')  # BREAKPOINT
+  elseif exists('g:use_ipython') && g:use_ipython == 1
+    normal Oimport ipdb; ipdb.set_trace()  # BREAKPOINT
+    normal oprint('>>> ipdb.set_trace()')  # BREAKPOINT
+  else
+    normal Oimport pdb; pdb.set_trace()   # BREAKPOINT
+    normal oprint('>>> pdb.set_trace()')  # BREAKPOINT
+  endif
+  normal j
+endfunction
+
+function! development#python_breakpoint_del()
+  g/BREAKPOINT/d
+endfunction
+
+function development#python_setup()
+  if !filereadable('Makefile')
+    setlocal makeprg=flake8
   endif
 endfunction

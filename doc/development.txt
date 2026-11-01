@@ -21,6 +21,9 @@ CONTENTS                                            *development-contents*
   Normal mode mappings ................... |development-normal-mappings|
   Commands .................................... |development-commands|
   CTags integration ............................. |development-ctags|
+  Python ......................................... |development-python|
+  Java ............................................. |development-java|
+  Make ............................................. |development-make|
 ==============================================================================
 
 CODE FILE SETUP                                       *development-setup*
@@ -64,6 +67,16 @@ VARIABLES                                            *development-vars*
     let g:code_filetypes += ['fsharp']
 <
 
+*g:use_bpython*  When inserting a Python breakpoint, use the library
+               shipped with the bpython interpreter: >
+    :let g:use_bpython = 1
+<
+
+*g:use_ipython*  When inserting a Python breakpoint, use the library
+               shipped with the ipdb package: >
+    :let g:use_ipython = 1
+<
+
 NORMAL MODE MAPPINGS                      *development-normal-mappings*
 
 Note: the mappings below use |<Leader>|; the boilerplate in
@@ -103,5 +116,63 @@ working directory, this plugin regenerates it with ctags: >
     ctags -R --exclude=env --exclude=.venv --exclude=node_modules . &
 <
 It needs the exuberant-ctags or universal-ctags tool installed.
+
+PYTHON                                                *development-python*
+
+Python buffers are set up as code files, see |development-setup|, with a
+four-space indentation, and get:
+
+INSERT MODE MAPPINGS                             *development-py-i*
+
+'<CR>        Inserts a Python docstring >
+    '''
+      ...your text goes here...
+    '''
+<
+"<CR>        Same, with double quotes: >
+    """
+      ...your text goes here...
+    """
+<
+
+COMMANDS                                          *development-py-commands*
+
+                                                             *:BreakPoint*
+:BreakPoint  Inserts a debugger breakpoint, with a `print()` marker, in
+             the line before the cursor: >
+
+    import pdb; pdb.set_trace()   # BREAKPOINT
+    print('>>> pdb.set_trace()')  # BREAKPOINT
+<
+             With |g:use_bpython| or |g:use_ipython| set, the inserted
+             code uses bpdb or ipdb instead of pdb.
+
+                                                         *:UnbreakPoint*
+:UnbreakPoint Deletes all the breakpoints of the current buffer that
+              were inserted with |:BreakPoint|.
+
+MAKE                                          *development-py-make*
+
+:make         On a Python buffer, runs flake8, unless there is a Makefile
+              in the current working directory.
+
+JAVA                                                   *development-java*
+
+Java buffers are set up as code files, see |development-setup|, with
+two-space indentation and a wider margin: >
+    setlocal expandtab
+    setlocal shiftwidth=2
+    setlocal tabstop=2
+    setlocal textwidth=120
+<
+
+MAKE                                                   *development-make*
+
+Makefile builds require the real tab characters, so they are not
+replaced with spaces: >
+    setlocal noexpandtab
+    setlocal shiftwidth=4
+    setlocal tabstop=4
+<
 
  vim:tw=78:ts=8:ft=help:norl:
